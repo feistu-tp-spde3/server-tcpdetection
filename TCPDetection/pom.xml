@@ -9,19 +9,19 @@
     <version>0.1.0</version>
 
     <dependencies>
-        <dependency>
-                <groupId>org.apache.activemq</groupId>
+	<dependency>
+		<groupId>org.apache.activemq</groupId>
                 <artifactId>activemq-broker</artifactId>
                  <version>5.14.4</version>
-                <!--<scope>system</scope> -->
-                <!--<systemPath>${basedir}/activemq-all-5.14.4.jar</systemPath>-->
+		<!--<scope>system</scope> -->
+		<!--<systemPath>${basedir}/activemq-all-5.14.4.jar</systemPath>-->
        </dependency>
        <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jms_1.1_spec</artifactId>
                  <version>1.1.1</version>
         </dependency>
-
+  
 <dependency>
   <groupId>jnetpcap</groupId>
   <artifactId>jnetpcap</artifactId>
@@ -60,8 +60,8 @@
                                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>tcpdetection.TCPDetection</mainClass>
                                 </transformer>
-							</transformers>
-                           <createDependencyReducedPom>false</createDependencyReducedPom>
+                           </transformers>
+			   <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
                 </executions>
