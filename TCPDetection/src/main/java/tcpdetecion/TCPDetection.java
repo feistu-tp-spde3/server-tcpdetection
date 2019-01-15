@@ -18,23 +18,24 @@ import org.apache.activemq.BlobMessage;
 
 public class TCPDetection {
 
-   public static void main(String[] args) throws IOException, JMSException {
-        System.out.println("Monitoring adresses:");
+    public static void main(String[] args) throws IOException, JMSException {
+        System.out.println("[TCPDetection] Starting");
+        System.out.println("[TCPDetection] Monitoring adresses:");
 
-        for(int i = 0; i < args.length; i++)
-                System.out.println(args[i]);
+        for (int i = 0; i < args.length; i++) {
+            System.out.println("\t" + args[i]);
+        }
 
         ReaderFromQueue reader = new ReaderFromQueue("tcp://147.175.98.24:61616", "PCAPS_TCP");
         File tempFile;
         Detector detector = new Detector(args);
 
-        while((tempFile = reader.readFile()) != null)
-        {
-           String fileName = tempFile.getName();
-           System.out.println("File name: " + fileName);
-           detector.run(tempFile);
+        while ((tempFile = reader.readFile()) != null) {
+            String fileName = tempFile.getName();
+            System.out.println("[TCPDetection] Starting detector on " + fileName);
+            detector.run(tempFile);
         }
 
         reader.closeConnection();
-   }
+    }
 }

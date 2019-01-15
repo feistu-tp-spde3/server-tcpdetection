@@ -15,6 +15,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.BlobMessage;
 
 public class ReaderFromQueue {
+
     ConnectionFactory connectionFactory;
     Connection connection;
     Session session;
@@ -37,7 +38,7 @@ public class ReaderFromQueue {
 
     public File readFile() {
         File tempFile = null;
-        try{
+        try {
             BlobMessage blobMessage = (BlobMessage) consumer.receive();
 
             String dir = "/tmp/";
@@ -48,9 +49,9 @@ public class ReaderFromQueue {
             tempFile.deleteOnExit();
 
             InputStream in = blobMessage.getInputStream();
-            try(FileOutputStream out = new FileOutputStream(tempFile)){
+            try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 byte[] buffer = new byte[1024];
-                while(true){
+                while (true) {
                     int bytesRead = in.read(buffer);
                     if (bytesRead == -1) {
                         break;
@@ -60,22 +61,21 @@ public class ReaderFromQueue {
                 }
                 out.close();
             }
-  }   catch (JMSException ex) {
+        } catch (JMSException ex) {
         } catch (IOException ex) {
         } finally {
             return tempFile;
         }
     }
 
-    public void closeConnection(){
+    public void closeConnection() {
         try {
             connection.close();
         } catch (JMSException ex) {
         }
     }
-    public void deleteFile(File tempFile){
+
+    public void deleteFile(File tempFile) {
         tempFile.delete();
     }
 }
-
-                                         
