@@ -25,26 +25,16 @@ public class DBConn {
     
     public void SendTCPFlood(String destination, long value) {
         try {
+            String[] parts = destination.split(":");
+            String ip = parts[0];
+            int port = Integer.parseInt(parts[1]);
+
             Connection conn = Connect();
-            PreparedStatement statement = conn.prepareStatement("INSERT INTO TCPFLOODS VALUES (?,?,?,?)");
-            statement.setNull(1, java.sql.Types.INTEGER);
-            statement.setString(2, destination);
+            System.out.println("[TCPDetection] Connected to DB");
+            PreparedStatement statement = conn.prepareStatement("INSERT INTO tcp_flood (ip, port, value) VALUES (?,?,?)");
+            statement.setString(1, ip);
+            statement.setInt(2, port);
             statement.setLong(3, value);
-            statement.setNull(4, java.sql.Types.TIMESTAMP);
-            statement.execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public void SendUDPFlood(String fromDestination, String toDestination) {
-        try {
-            Connection conn = Connect();
-            PreparedStatement statement = conn.prepareStatement("INSERT INTO UDPFLOODS VALUES (?,?,?,?)");
-            statement.setNull(1, java.sql.Types.INTEGER);
-            statement.setString(2, fromDestination);
-            statement.setString(3, toDestination);
-            statement.setNull(4, java.sql.Types.TIMESTAMP);
             statement.execute();
         } catch (Exception e) {
             e.printStackTrace();

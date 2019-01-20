@@ -39,18 +39,15 @@ public class Detector {
     private HashMap<String, Long> ttl = new HashMap<String, Long>();
     
     // Trieda k pripojeniu k db
-    // private DBConn db = new DBConn(--HOST--, --USER--, --PASS--);
-    
+    private DBConn db;
+
     // konstruktor
     Detector(String args[]) {
         for (int i = 0; i < args.length; i++) {
             monitoredIP.add(args[i]);
         }
-    }
 
-    public static long bytesToLong(byte[] bytes) {
-        long b = ByteBuffer.wrap(bytes).getLong();
-        return b;
+        db = new DBConn("<host>:<port>/<database_name>", "<username>", "<password>");
     }
 
     // parsovanie pcap suboru
@@ -69,6 +66,7 @@ public class Detector {
 
         int parsed_packets = 0;
         int monitored_packets = 0;
+        int syn_count = 0, fin_count = 0;
         while (pcap.nextEx(hdr, buf) == Pcap.NEXT_EX_OK) {
             PcapPacket packet = new PcapPacket(hdr, buf);
             packet.scan(id);
@@ -108,18 +106,20 @@ public class Detector {
 
             monitored_packets++;
 
-            String hash = destinationIP + "_" + Integer.toString(tcp.destination());
+            String hash = destinationIP + ":" + Integer.toString(tcp.destination());
 
             if (monitor.containsKey(hash)) {
                 if (tcp.flags_SYN()) {
                     long a = monitor.get(hash);
                     a++;
+                    syn_count++;
                     monitor.put(hash, a);
                 }
 
                 if (tcp.flags_FIN()) {
                     long a = monitor.get(hash);
                     a--;
+                    fin_count++;
                     monitor.put(hash, a);
                 }
             } else {
@@ -129,17 +129,20 @@ public class Detector {
                 if (tcp.flags_SYN()) {
                     long a = monitor.get(hash);
                     a++;
+                    syn_count++;
                     monitor.put(hash, a);
                 }
                 if (tcp.flags_FIN()) {
                     long a = monitor.get(hash);
                     a--;
+                    fin_count++;
                     monitor.put(hash, a);
                 }
             }
         }
 
         System.out.println(">> Parsed " + pcapFile.getPath() + " (packets: " + Integer.toString(parsed_packets) + ", monitored: " + Integer.toString(monitored_packets) + ")");
+        System.out.println(">> SYN count: " + Integer.toString(syn_count) + ", FIN count: " + Integer.toString(fin_count));
 
         // detekcia
         for (Map.Entry<String, Long> entry : monitor.entrySet()) {
@@ -148,7 +151,7 @@ public class Detector {
 
             if (value > THRESHOLD) {
                 System.out.println("[+] TCP flood alert for destination: " + destination + ", value: " + Long.toString(value));
-                //db.SendTCPFlood(key, value);
+                db.SendTCPFlood(destination, value);
             }
         }
 
